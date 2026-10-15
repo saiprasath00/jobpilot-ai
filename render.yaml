@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: jobpilot-ai
+    runtime: docker
+    plan: free
+    autoDeployTrigger: commit
+    healthCheckPath: /healthz
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: OPENAI_MODEL
+        value: gpt-4.1
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: APP_PASSWORD
+        generateValue: true
