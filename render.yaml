@@ -8,9 +8,11 @@ services:
     envVars:
       - key: HOST
         value: 0.0.0.0
-      - key: OPENAI_MODEL
-        value: gpt-4.1
-      - key: OPENAI_API_KEY
+      - key: AI_PROVIDER
+        value: mwapi
+      - key: MWAPI_MODEL
+        value: claude-sonnet-4-6
+      - key: MWAPI_API_KEY
         sync: false
       - key: APP_PASSWORD
         generateValue: true

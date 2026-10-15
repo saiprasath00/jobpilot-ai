@@ -4,7 +4,7 @@ const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 await page.route('https://fonts.googleapis.com/**',r=>r.abort());
-await page.route('**/api/status',r=>r.fulfill({json:{configured:true,model:'gpt-4.1'}}));
+await page.route('**/api/status',r=>r.fulfill({json:{configured:true,provider:'MWAPI',model:'claude-sonnet-4-6'}}));
 await page.goto('http://127.0.0.1:3000/');
 await page.getByRole('button',{name:'My profile',exact:false}).first().click();
 await page.locator('input[name="name"]').fill('Alex Example');

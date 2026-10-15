@@ -8,7 +8,11 @@ import {openBrowser,fillBrowser,browserAction,closeBrowser} from './lib/browser.
 try{process.loadEnvFile(new URL('.env',import.meta.url).pathname)}catch(e){if(e.code!=='ENOENT')throw e}
 const host=process.env.HOST||'127.0.0.1',port=Number(process.env.PORT||3000),password=process.env.APP_PASSWORD;
 if(!['127.0.0.1','localhost','::1'].includes(host)&&!password)throw Error('Set APP_PASSWORD before allowing remote access. Use HTTPS at your reverse proxy.');
-const ai=createAI({apiKey:process.env.OPENAI_API_KEY,model:process.env.OPENAI_MODEL||'gpt-4.1'});
+const provider=process.env.AI_PROVIDER||'mwapi';
+const providerName=provider==='mwapi'?'MWAPI':'OpenAI';
+const apiKey=provider==='mwapi'?process.env.MWAPI_API_KEY:process.env.OPENAI_API_KEY;
+const model=provider==='mwapi'?(process.env.MWAPI_MODEL||'claude-sonnet-4-6'):(process.env.OPENAI_MODEL||'gpt-4.1');
+const ai=createAI({apiKey,model,provider});
 const appOrigin=process.env.APP_ORIGIN||process.env.RENDER_EXTERNAL_URL||(process.env.CODESPACE_NAME&&process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN?`https://${process.env.CODESPACE_NAME}-${port}.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`:undefined);
 let busy=false;
 function authorized(req){if(!password)return true;const encoded=req.headers.authorization?.split(' ')[1];let supplied='';try{supplied=Buffer.from(encoded||'','base64').toString().split(':').slice(1).join(':')}catch{}const a=Buffer.from(supplied),b=Buffer.from(password);return a.length===b.length&&timingSafeEqual(a,b)}
@@ -40,7 +44,7 @@ const server=http.createServer(async(req,res)=>{
   }finally{busy=false}
  }
  if(req.method!=='GET'){json(res,{error:'Method not allowed'},405);return}
- if(path==='/api/status'){json(res,{configured:!!process.env.OPENAI_API_KEY,provider:'OpenAI',model:process.env.OPENAI_MODEL||'gpt-4.1',browser:'local-server',busy});return}
+ if(path==='/api/status'){json(res,{configured:!!apiKey,provider:providerName,model,browser:'local-server',busy});return}
  if(path==='/api/jobs'){json(res,await getFeeds());return}
  const files={'/':['index.html','text/html'],'/app.js':['app.js','text/javascript'],'/location.js':['location.js','text/javascript'],'/agent-ui.js':['agent-ui.js','text/javascript'],'/style.css':['style.css','text/css'],'/manifest.webmanifest':['manifest.webmanifest','application/manifest+json'],'/icon.svg':['icon.svg','image/svg+xml']};
  const file=files[path];if(!file){json(res,{error:'Not found'},404);return}res.setHeader('Content-Type',file[1]);res.setHeader('Cache-Control','no-cache');res.end(await readFile(new URL('./public/'+file[0],import.meta.url)));
