@@ -4,9 +4,11 @@ A mobile-friendly, single-user website using the OpenAI Responses API, web searc
 
 ## Run from GitHub
 
-This repository is private. GitHub Pages cannot run this Node/Chromium application.
+This repository contains application source only; API keys and private configuration are excluded. The deployed workspace requires a password. GitHub Pages cannot run this Node/Chromium application.
 
 ### Hosted website: Render + GitHub
+
+[Deploy this repository on Render](https://render.com/deploy?repo=https://github.com/saiprasath00/jobpilot-ai)
 
 1. Open [Render's Blueprint deployment page](https://dashboard.render.com/select-repo?type=blueprint) and connect your GitHub account. Allow access to `saiprasath00/jobpilot-ai`.
 2. Select this repository. Render reads `render.yaml` and creates a free Docker web service. Free instances can sleep and are resource-limited; Chromium may require more memory for heavy application pages.
