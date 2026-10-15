@@ -2,9 +2,21 @@
   "name": "Jobpilot AI",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
   "postCreateCommand": "npm ci && npx playwright install --with-deps chromium",
-  "forwardPorts": [3000],
+  "forwardPorts": [
+    3000
+  ],
   "portsAttributes": {
-    "3000": {"label": "Jobpilot private website", "onAutoForward": "notify", "visibility": "private"}
+    "3000": {
+      "label": "Jobpilot private website",
+      "onAutoForward": "notify",
+      "visibility": "private"
+    }
   },
-  "remoteEnv": {"HOST": "127.0.0.1", "PORT": "3000"}
+  "remoteEnv": {
+    "HOST": "127.0.0.1",
+    "PORT": "3000",
+    "AI_PROVIDER": "mwapi",
+    "MWAPI_MODEL": "claude-sonnet-4-6"
+  },
+  "postStartCommand": "bash scripts/codespaces-start.sh"
 }

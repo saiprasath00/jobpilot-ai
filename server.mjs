@@ -10,7 +10,7 @@ const host=process.env.HOST||'127.0.0.1',port=Number(process.env.PORT||3000),pas
 if(!['127.0.0.1','localhost','::1'].includes(host)&&!password)throw Error('Set APP_PASSWORD before allowing remote access. Use HTTPS at your reverse proxy.');
 const provider=process.env.AI_PROVIDER||'mwapi';
 const providerName=provider==='mwapi'?'MWAPI':'OpenAI';
-const apiKey=provider==='mwapi'?process.env.MWAPI_API_KEY:process.env.OPENAI_API_KEY;
+const apiKey=provider==='mwapi'?(process.env.MWAPI_API_KEY||process.env.JOBPILOT_MWAPI_API_KEY):process.env.OPENAI_API_KEY;
 const model=provider==='mwapi'?(process.env.MWAPI_MODEL||'claude-sonnet-4-6'):(process.env.OPENAI_MODEL||'gpt-4.1');
 const ai=createAI({apiKey,model,provider});
 const appOrigin=process.env.APP_ORIGIN||process.env.RENDER_EXTERNAL_URL||(process.env.CODESPACE_NAME&&process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN?`https://${process.env.CODESPACE_NAME}-${port}.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`:undefined);
@@ -21,7 +21,7 @@ const json=(res,data,status=200)=>{res.writeHead(status,{'Content-Type':'applica
 const server=http.createServer(async(req,res)=>{
  res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('X-Frame-Options','DENY');
  if(req.method==='GET'&&req.url==='/healthz'){json(res,{status:'ok'});return;}
- if(!password&&!['127.0.0.1','localhost','[::1]'].includes((req.headers.host||'').replace(/:\d+$/,''))){json(res,{error:'Invalid host'},403);return;}
+ if(!password&&!['127.0.0.1','localhost','[::1]',...(process.env.CODESPACES==='true'&&appOrigin?[new URL(appOrigin).hostname]:[])].includes((req.headers.host||'').replace(/:\d+$/,''))){json(res,{error:'Invalid host'},403);return;}
  if(!authorized(req)){res.writeHead(401,{'WWW-Authenticate':'Basic realm="Jobpilot private workspace"'});res.end('Sign in to your private workspace.');return;}
  const path=new URL(req.url,'http://localhost').pathname;
  try{
