@@ -18,6 +18,19 @@ const ai=createAI({apiKey,model,provider});
 const appOrigin=process.env.APP_ORIGIN||process.env.RENDER_EXTERNAL_URL||(process.env.CODESPACE_NAME&&process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN?`https://${process.env.CODESPACE_NAME}-${port}.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`:undefined);
 let busy=false;
 function authorized(req){if(!password)return true;const encoded=req.headers.authorization?.split(' ')[1];let supplied='';try{supplied=Buffer.from(encoded||'','base64').toString().split(':').slice(1).join(':')}catch{}const a=Buffer.from(supplied),b=Buffer.from(password);return a.length===b.length&&timingSafeEqual(a,b)}
+function firstHeader(value){return (Array.isArray(value)?value[0]:value||'').split(',')[0].trim()}
+function requestOrigin(req){
+ const forwardedHost=firstHeader(req.headers['x-forwarded-host']);
+ const forwardedProto=firstHeader(req.headers['x-forwarded-proto']);
+ const requestHost=forwardedHost||firstHeader(req.headers.host);
+ const protocol=forwardedProto||(req.socket.encrypted?'https':'http');
+ try{return new URL(`${protocol}://${requestHost}`).origin}catch{return ''}
+}
+function originAllowed(req){
+ if(!req.headers.origin)return true;
+ let origin;try{origin=new URL(req.headers.origin).origin}catch{return false}
+ return origin===requestOrigin(req)||origin===appOrigin;
+}
 async function body(req){let size=0,parts=[];for await(const part of req){size+=part.length;if(size>8*1024*1024)throw new AIError('Request is too large.',413);parts.push(part)}try{return JSON.parse(Buffer.concat(parts).toString())}catch{throw new AIError('Invalid JSON request.',400)}}
 const json=(res,data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data))};
 const server=http.createServer(async(req,res)=>{
@@ -28,7 +41,7 @@ const server=http.createServer(async(req,res)=>{
  const path=new URL(req.url,'http://localhost').pathname;
  try{
  if(req.method==='POST'){
-  if(req.headers.origin&&req.headers.origin!==`${req.socket.encrypted?'https':'http'}://${req.headers.host}`&&req.headers.origin!==appOrigin)throw new AIError('Cross-origin requests are not allowed.',403);
+  if(!originAllowed(req))throw new AIError('Cross-origin requests are not allowed.',403);
   if(!req.headers['content-type']?.startsWith('application/json'))throw new AIError('JSON is required.',415);
   if(busy)throw new AIError('An agent task is already running. Wait or stop it first.',409);
   const input=await body(req);const controller=new AbortController();res.on('close',()=>{if(!res.writableEnded)controller.abort()});const signal=controller.signal;
