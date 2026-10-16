@@ -7,7 +7,7 @@ import {searchAgent,applicationAgent} from './lib/agent.mjs';
 import {openBrowser,fillBrowser,browserAction,closeBrowser} from './lib/browser.mjs';
 try{process.loadEnvFile(new URL('.env',import.meta.url).pathname)}catch(e){if(e.code!=='ENOENT')throw e}
 const host=process.env.HOST||'127.0.0.1',port=Number(process.env.PORT||3000),password=process.env.APP_PASSWORD;
-if(!['127.0.0.1','localhost','::1'].includes(host)&&!password)throw Error('Set APP_PASSWORD before allowing remote access. Use HTTPS at your reverse proxy.');
+if(!['127.0.0.1','localhost','::1'].includes(host)&&!password&&process.env.CODESPACES!=='true')throw Error('Set APP_PASSWORD before allowing remote access. Use HTTPS at your reverse proxy.');
 const provider=process.env.AI_PROVIDER||'mwapi';
 const providerName=provider==='mwapi'?'MWAPI':'OpenAI';
 const apiKey=provider==='mwapi'?(process.env.MWAPI_API_KEY||process.env.JOBPILOT_MWAPI_API_KEY):process.env.OPENAI_API_KEY;
