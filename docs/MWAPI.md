@@ -33,6 +33,10 @@ MWAPI_API_KEY=YOUR_PRIVATE_KEY
 MWAPI_MODEL=claude-sonnet-4-6
 ```
 
+Jobpilot also accepts `JOBPILOT_MWAPI_API_KEY` or `API_KEY` in GitHub
+Codespaces. GitHub secret names cannot contain spaces, so a secret described as
+"API key" should be named `API_KEY`.
+
 The base URL is fixed in `lib/mwapi.mjs` to prevent accidentally sending this key to a different host. HTTP redirects are rejected. Keys are used only on the server.
 
 ## Render setup
