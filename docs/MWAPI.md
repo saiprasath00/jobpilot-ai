@@ -33,7 +33,7 @@ MWAPI_API_KEY=YOUR_PRIVATE_KEY
 MWAPI_MODEL=claude-sonnet-4-6
 ```
 
-Jobpilot also accepts `JOBPILOT_MWAPI_API_KEY` or `API_KEY` in GitHub
+Jobpilot also accepts `JOBPILOT_MWAPI_API_KEY`, `API_KEY`, or `API` in GitHub
 Codespaces. GitHub secret names cannot contain spaces, so a secret described as
 "API key" should be named `API_KEY`.
 

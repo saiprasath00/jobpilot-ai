@@ -23,7 +23,7 @@ GitHub pushes will redeploy the service. The API key belongs in Render's secret 
 
 Open [Create a Codespace](https://codespaces.new/saiprasath00/jobpilot-ai). Setup installs Chromium and starts the app automatically. Open port 3000 from the Ports panel and keep its visibility **Private**.
 
-Configure `JOBPILOT_MWAPI_API_KEY` or `API_KEY` as a [GitHub Codespaces user secret](https://github.com/settings/codespaces) with access restricted to this repository. GitHub secret names cannot contain spaces. The server reads this secret directly. If you prefer local setup inside the Codespace, run `npm run setup` and restart the app instead. The key never belongs in Git.
+Configure `JOBPILOT_MWAPI_API_KEY`, `API_KEY`, or `API` as a [GitHub Codespaces user secret](https://github.com/settings/codespaces) with access restricted to this repository. GitHub secret names cannot contain spaces. The server reads this secret directly. If you prefer local setup inside the Codespace, run `npm run setup` and restart the app instead. The key never belongs in Git.
 
 A Codespace is a temporary development environment, not an always-on website; usage is subject to your GitHub quota and billing settings. Stop it when you finish. If startup fails, inspect `/tmp/jobpilot-server.log`.
 
