@@ -28,6 +28,7 @@ function requestOrigin(req){
 }
 function originAllowed(req){
  if(!req.headers.origin)return true;
+ if(process.env.CODESPACES==='true'&&firstHeader(req.headers['sec-fetch-site'])==='same-origin')return true;
  let origin;try{origin=new URL(req.headers.origin).origin}catch{return false}
  return origin===requestOrigin(req)||origin===appOrigin;
 }
